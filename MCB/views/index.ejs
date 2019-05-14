@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <title> node js </title>
+    <link rel='stylesheet' href='/stylesheets/node.css' />
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <style type="text/css"> 
+      .navbar{
+        height: 50px;
+      }
+    </style>
+    <meta charset="UTF-8">
+
+  </head>
+
+  <script>
+    setInterval(function(){ 
+        
+        $.getJSON( "/api/node", function( a ) {
+            $('#temp').text(a.Temperature);
+            $('#hum').text(a.Humidity);
+            $('#light').text(a.Light);
+            //console.log(a.Temperature);
+        });
+        $.getJSON( "/api/nodehummax", function( a ) {
+            $('#hummax').text(a.Humidity);
+            //console.log(a.Temperature);
+        });
+        $.getJSON( "/api/nodehummin", function( a ) {
+            $('#hummin').text(a.Humidity);
+            //console.log(a.Temperature);
+        });
+        $.getJSON( "/api/nodetempmin", function( a ) {
+            $('#tempmin').text(a.Temperature);
+            //console.log(a.Temperature);
+        });
+        $.getJSON( "/api/nodetempmax", function( a ) {
+            $('#tempmax').text(a.Temperature);
+            //console.log(a.Temperature);
+        });
+        $.getJSON( "/api/nodelightmin", function( a ) {
+            $('#lightmin').text(a.Light);
+            //console.log(a.Temperature);
+        });
+        $.getJSON( "/api/nodelightmax", function( a ) {
+            $('#lightmax').text(a.Light);
+            //console.log(a.Temperature);
+        });
+
+     }, 500);
+   
+ </script>
+ <script>
+    window.onload = function () {
+    
+    var dps = [];
+    var dps1 = [];
+    var dps2 = [];
+
+    var chart = new CanvasJS.Chart("charttemphum", {
+        backgroundColor: "#ECF0F5",
+        theme: "light2",
+        title :{
+            text: "Temp and Hum"
+        },
+        axisY: {
+            includeZero: false
+        },
+          toolTip: {
+            shared: true
+        },
+        data: [
+        {
+            type: "line",
+            dataPoints: dps,
+            xValueType: "dateTime",
+            xValueFormatString: "hh:mm:ss TT",
+            name: "Temp",
+            color: "#DC143C"
+        },
+        {
+            type: "line",
+            dataPoints: dps1,
+            xValueType: "dateTime",
+            xValueFormatString: "hh:mm:ss TT",
+            name: "Hum",
+            color: "#6495ED"
+        }
+        ]
+    });
+
+    var chart1 = new CanvasJS.Chart("chartlight", {
+        backgroundColor: "#ECF0F5",
+        theme: "light2",
+        title :{
+            text: "Light"
+        },
+        axisY: {
+            includeZero: false
+        },
+          toolTip: {
+            shared: true
+        },
+        data: [
+        {
+            type: "line",
+            dataPoints: dps2,
+            xValueType: "dateTime",
+            xValueFormatString: "hh:mm:ss TT",
+            name: "Light",
+            color: "yellow"
+        }]
+    });
+    var updateInterval = 1000;
+    var dataLength = 10; // number of dataPoints visible at any point
+    var time = new Date();
+    var m =1;
+    
+    setInterval(function(){ 
+        $.getJSON( "/api/node", function( a ) {
+            time.setTime(time.getTime()+ 1000);
+            // $('#temp').text(a.Temperature);
+            // $('#hum').text(a.Humidity);
+            // $('#light').text(a.Light);
+              m = m+1;
+            dps.push({
+                x: time.getTime(),
+                // x: m,
+                y: a.Temperature
+            });
+            dps1.push({
+                x: time.getTime(),
+                // x : m,
+                y: a.Humidity
+            });
+            dps2.push({
+                x: time.getTime(),
+                // x : m,
+                y: a.Light
+            });
+            // console.log("aaaa");
+            console.log(m);
+            if (dps.length > dataLength) {
+              dps.shift();
+            }
+            if (dps1.length > dataLength) {
+              dps1.shift();
+            }
+            if (dps2.length > dataLength) {
+              dps2.shift();
+            }
+    
+        chart.render();
+        chart1.render();
+        // chart2.render();
+        });
+      }, 1000);
+    }
+  </script>
+   <script>
+            setInterval(function(){ 
+                
+                $.getJSON( "/api/node", function( a ) {
+                    var temp = document.getElementById('temp1');
+                    var hum = document.getElementById('hum1');
+                    var light = document.getElementById('light1');
+                    if(a.Temperature <= 20){
+                        temp.style.color = "#2E9AFE";
+                    }
+                    if(a.Temperature > 20 && a.Temperature <= 30){
+                        temp.style.color = "#DC143C";
+                    }
+                    if(a.Temperature > 30){
+                        temp.style.color = "#FF4000";
+                       
+                    }
+                    if(a.Humidity <= 40){
+                        hum.style.color = "#2E9AFE";
+                       
+                    }
+                    if(a.Humidity> 40 && a.Humidity <= 80){
+                        hum.style.color = "#6495ED";
+                        
+                    }
+                    if(a.Humidity > 80){
+                        hum.style.color = "#084B8A";
+                        
+                    }
+                    if(a.Light <= 200){
+                        light.style.color = "#FE9A2E";
+                        
+                    }
+                    if(a.Light > 200 && a.Light <= 600){
+                        light.style.color = "#DF7401";
+                       
+                    }
+                    if(a.Light > 600){
+                        light.style.color= "#8A4B08";   
+                    }
+                    $('#temptest').text(a.Temperature);
+
+                });
+            }, 500);
+           
+        </script>
+
+  <body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark d-flex justify-content-center">
+      <ul class="navbar-nav " >
+       <li class="nav-item">
+          <a class="nav-link" href="position1.php" style="color: white;margin-right: 300px">Position</a>
+         </li>   
+      <li>
+        <a class="navbar-brand" href="https://www.facebook.com/profile.php?id=100009851194142&epa=SEARCH_BOX">
+          <img src="/images/quan.jpg" alt="logo" style="width:40px;height: 40px; border-radius: 50%">
+        </a>
+        <!-- <ul class="navbar-nav " > -->
+      </li>   
+        <li class="nav-item">
+          <a class="nav-link" href="nhung.php" style="color: white">Node1</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="node2.php" style="color: white">Node2</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="node3.php" style="color: white">Node3</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="indexlogin.php" style="color: white;margin-left: 300px">Logout</a>
+        </li>
+      </ul>
+    </nav>
+<!-- control led----------------------------------------------------------------------------->
+    <div class="container-fluid">
+      <div class="row mt-1">
+
+        <div class="col-lg-3 rounded" >
+          <div class="col-md-12 rounded" style="background-color:lavender;">
+          <div class="row d-flex justify-content-center">
+            <!-- <p style="font-size:96px; color:yellow;">
+                <span class="fas fa-lightbulb"></span>
+            </p> -->
+            <p style="margin-top: 23px"> TRƯƠNG ANH QUÂN</p><br>
+            <h4>B15DCDT160</h4>
+            <h3> MẠNG CẢM BIẾN </h3>
+          </div>
+          <div class="row mt-2"> 
+            <p style="font-weight: bold;margin-left: 10px">CONTROL</p>
+             <label class="switch" style = "margin-left: 60px;">
+                <input id="check-led1" type="checkbox" checked>
+                <span class="slider round"></span>
+                  <script>
+                      $('#check-led1').click(function() {
+                          var led1 = $(this).prop('checked');
+                          if (led1) led1 = 1;
+                          else led1 = 0;
+                          $.post( "/api/led1", { signal: led1})
+                          .done(function( data ) {
+
+                          });
+                      });
+                  </script>
+            </label>  
+          </div>
+
+          <div class="row ">
+            <p style="font-weight: bolder;margin-left: 10px">SLIDER</p>
+            <div class="slidecontainer" style="margin-left: 10px">
+              <input id="control-led" class ="slider1" type="range" min="0" max="1023">
+              <script>
+                  $('#control-led').on('change', function() {
+                      var led1 = $(this).val();
+                      $.post( "/api/controlled", { pwm: led1 })
+                          .done(function( data ) {
+
+                          });
+                      console.log(led1)
+                  });
+              </script>
+            </div>  
+          </div>
+        </div>
+      </div>
+
+ <!-- DO AM ------------------------------------------------------------------------------ -->
+        <div class="col-lg-3"  >
+          <div class="col-md-12 rounded" style="background-color:#A9D0F5;">
+            <div class="row">
+              <div class="col-lg-5" style="background-color: #A9D0F5;">
+                <p id ="hum1" style="font-size:120px; color: #5858FA;">
+                    <i class="fas fa-cloud-rain"></i>
+                </p>
+              </div>
+              <div class="col-lg-7 ">
+                <div class = "row mt-5 ml-2">
+                  <h4>MAX : <h4 id = "hummax"> </h4> </h4>
+                </div>
+                <div class = "row  ml-2">
+                  <h4>MIN  : <h4 id = "hummin"> </h4></h4>
+                </div>
+                <div class = "row  ml-2">
+                  <h4>Humidity</h4>
+                </div>
+              </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+              <h4>NOW : <h4 id = "hum"> </h4> </h4>
+            </div>
+          </div>
+        </div>
+        <!-- </div> -->
+ <!-- NHIET DO---------------------------------------------------------------------------------- -->
+        <div class="col-lg-3">
+          <div class="col-md-12 rounded "style="background-color:lavender;">
+          <div class="row">
+            <div class="col-lg-5" style="background-color: lavender;">
+              <p id ="temp1" style="font-size:120px; color: #FF4000;">
+                  <i class="fas fa-thermometer-three-quarters ml-2"></i>
+              </p>
+            </div>
+            <div class="col-lg-7 ">
+              <div class = "row mt-5 ml-1">
+                 <h4>MAX : <h4 id = "tempmax"> </h4> </h4>
+              </div>
+              <div class = "row  ml-1">
+                 <h4>MIN : <h4 id = "tempmin"> </h4> </h4>
+              </div>
+              <div class = "row  ml-1">
+                <h4>Temperature</h4>
+              </div>
+            </div>
+          </div>
+
+          <div class="row d-flex justify-content-center">
+            <h4>NOW : <h4 id = "temp"> </h4> </h4>
+          </div>
+        </div>
+        </div>
+<!-- ANH SANG-------------------------------------------------------------------------------------- -->
+        <div class="col-lg-3" >
+          <div class="col-md-12 rounded" style="background-color:#58FAF4;">
+            <div class="row">
+              <div class="col-lg-5" style="background-color: #58FAF4;">
+                <p id = "light1" style="font-size:120px; color: #FFBF00;">
+                    <i class="fas fa-sun"></i>
+                </p>
+              </div>
+              <div class="col-lg-7 ">
+                <div class = "row mt-5 ml-1">
+                   <h4>MAX : <h4 id = "lightmax"> </h4> </h4>
+                </div>
+                <div class = "row  ml-1">
+                   <h4>MIN : <h4 id = "lightmin"> </h4> </h4>
+                </div>
+                <div class = "row  ml-1">
+                  <h4>Light</h4>
+                </div>
+              </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+              <h4>NOW : <h4 id = "light"> </h4> </h4>
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- --------------------------------------------------------------------------------------------------  -->
+        <!-- <div class = "row">
+          <div class = "col-lg-6" > 
+            <div id="charttemp" style="height: 200px; width: 450px; "></div>
+          </div> 
+          <div class = "col-lg-6" > h</div>
+            <div id="charthum" style="height: 200px; width: 450px;"></div>
+        </div>
+        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script> -->
+        <hr class="style-four">
+          <div style = "display: flex;align-items: center;justify-content: center;">
+              <div id="charttemphum" style="height: 230px; width: 550px; float: left;"></div>
+              <div id="chartlight" style="height: 230px; width: 550px; margin-left:30px;"></div>
+          </div>
+          <br>
+          <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+        <hr class="style-four">
+<!-- --------------------------------------------------------------------------------------------------- -->
+    </div>
+
+
+  </body>
+</html>

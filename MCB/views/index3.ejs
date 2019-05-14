@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+
+  <body>
+ <script>
+    setInterval(function(){ 
+        
+        $.getJSON( "/api/node", function( a ) {
+            $('#temp').text(a.Temperature);
+            //console.log(a.Temperature);
+        });
+     }, 500);
+   
+ </script>
+
+    <h2><%= title %></h2>
+    <p> nhiet do <span id = "temp"></span></p>
+    <h1>iOS Switches with Labels</h1>
+
+  <!-- <div id="toggles">
+    <input type="checkbox" name="checkbox1" id="checkbox1" class="ios-toggle" checked>
+    <label for="checkbox1" class="checkbox-label" data-off="off" data-on="on"></label> 
+  </div> -->
+
+  <label class="switch" style = "margin-left: 10px;">
+      <input id="check-led1" type="checkbox" checked>
+      <span class="slider round"></span>
+        <script>
+            $('#check-led1').click(function() {
+                var led1 = $(this).prop('checked');
+                if (led1) led1 = 1;
+                else led1 = 0;
+                $.post( "/api/led1", { signal: led1})
+                .done(function( data ) {
+
+                });
+            });
+        </script>
+  </label>
+
+
+  <input id="control-led" style="margin-left:20px; margin-right:100px;" type="range" min="0" max="255">
+  <script>
+      $('#control-led').on('change', function() {
+          var led1 = $(this).val();
+          $.post( "/api/controlled", { pwm: led1 })
+              .done(function( data ) {
+
+              });
+          console.log(led1)
+      });
+  </script>
+
+  </body>
+</html>
